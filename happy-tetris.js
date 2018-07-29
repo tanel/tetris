@@ -241,19 +241,27 @@ var game = {
 		return pixels;
 	},
 
-	drawTetromino: function () {
-		var tetrominoPixels = this.tetrominoPixels[this.tetromino.tetromino][this.tetromino.direction];
-		for (var row = 0; row < tetrominoPixels.length; row++) {
-			for (var col = 0; col < tetrominoPixels[row].length; col++) {
-				if (tetrominoPixels[row][col]) {
-					this.drawPixel({
-						row: this.tetromino.row + row,
-						col: this.tetromino.col + col,
-						color: this.tetromino.color,
-					});
+	visitTetrominoPixels: function (tetromino, visitor) {
+		var pixels = this.tetrominoPixels[tetromino.tetromino][tetromino.direction];
+		for (var row = 0; row < pixels.length; row++) {
+			for (var col = 0; col < pixels[row].length; col++) {
+				if (pixels[row][col]) {
+					visitor(tetromino.row + row, tetromino.col + col);
 				}
 			}
 		}
+	},
+
+	drawTetromino: function () {
+		var draw = this.drawPixel.bind(this),
+			tetromino = this.tetromino;
+		this.visitTetrominoPixels(tetromino, function (row, col) {
+			draw({
+				row: row,
+				col: col,
+				color: tetromino.color,
+			});
+		});
 	},
 
 	drawPixel: function (pixel) {
@@ -293,12 +301,20 @@ var game = {
 		}
 	},
 
+	cloneTetromino: function () {
+		return Object.assign({}, this.tetromino);
+	},
+
 	moveLeft: function () {
-		this.tetromino.col = this.tetromino.col - 1;
+		var clone = this.cloneTetromino();
+		clone.col = clone.col - 1;
+		this.moveTo(clone);
 	},
 
 	moveRight: function () {
-		this.tetromino.col = this.tetromino.col + 1;
+		var clone = this.cloneTetromino();
+		clone.col = clone.col + 1;
+		this.moveTo(clone);
 	},
 
 	drop: function () {
@@ -306,15 +322,44 @@ var game = {
 	},
 
 	nextDirection: function () {
-		if (this.tetromino.direction === 3) {
-			this.tetromino.direction = 0;
+		var clone = this.cloneTetromino();
+		if (clone.direction === 3) {
+			clone.direction = 0;
 		} else {
-			this.tetromino.direction = this.tetromino.direction + 1;
+			clone.direction = clone.direction + 1;
 		}
+
+		this.moveTo(clone);
 	},
 
 	moveDown: function () {
-		this.tetromino.row = this.tetromino.row + 1;
+		var clone = this.cloneTetromino();
+		clone.row = clone.row + 1;
+		this.moveTo(clone);
+	},
+
+	moveTo: function (clone) {
+		var canMove = true,
+			maxRows = this.rows,
+			maxCols = this.cols;
+
+		this.visitTetrominoPixels(clone, function (row, col) {
+			if (col < 0) {
+				canMove = false;
+			}
+
+			if (col >= maxCols) {
+				canMove = false;
+			}
+
+			if (row >= maxRows) {
+				canMove = false;
+			}
+		});
+
+		if (canMove) {
+			this.tetromino = clone;
+		}
 	},
 };
 
