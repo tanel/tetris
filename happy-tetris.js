@@ -313,7 +313,7 @@ var game = {
 	},
 
 	drop: function () {
-		
+		while (this.moveDown());
 	},
 
 	nextDirection: function () {
@@ -330,9 +330,12 @@ var game = {
 	moveDown: function () {
 		var clone = this.cloneTetromino();
 		clone.row = clone.row + 1;
-		if (!this.moveTo(clone)) {
-			this.addToDroppedPixels();
+		if (this.moveTo(clone)) {
+			return true;
 		}
+
+		this.addToDroppedPixels();
+		return false;
 	},
 
 	addToDroppedPixels: function () {
