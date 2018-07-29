@@ -308,7 +308,11 @@ var game = {
 	},
 
 	nextDirection: function () {
-
+		if (this.tetromino.direction === 3) {
+			this.tetromino.direction = 0;
+		} else {
+			this.tetromino.direction = this.tetromino.direction + 1;
+		}
 	},
 
 	moveDown: function () {
