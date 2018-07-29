@@ -1,5 +1,4 @@
 var game = {
-	canvas: null,
 	cols: 20,
 	rows: 20,
 	pixelSize: 20, // canvas.width / cols
@@ -164,7 +163,6 @@ var game = {
 			],
 		],
 	},
-	tetromino: null,
 
 	start: function (canvas) {
 		this.c = canvas.getContext("2d");
