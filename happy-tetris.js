@@ -4,6 +4,9 @@ var game = {
 	rows: 20,
 	pixelSize: 20, // canvas.width / cols
 	colors: ["red", "blue", "green", "yellow"],
+	keyDelay: 100,
+	gameSpeed: 1000,
+	keyAt: 0,
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -166,19 +169,25 @@ var game = {
 	start: function (canvas) {
 		this.c = canvas.getContext("2d");
 		this.tetromino = this.randomTetromino();
-		this.tick();
+		this.draw();
+		this.setTickTimeout();
 	},
 
 	tick: function () {
-		this.draw();
 		this.moveTetromino();
-		this.timeout = window.setTimeout(this.tick.bind(this), 1000);
+		this.setTickTimeout();
+	},
+
+	setTickTimeout: function () {
+		this.timeout = window.setTimeout(this.tick.bind(this), this.gameSpeed);
 	},
 
 	draw: function () {
 		this.drawBackground();
 		this.drawGrid();
 		this.drawTetromino();
+		
+		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.keyDelay);
 	},
 
 	moveTetromino: function () {
@@ -255,9 +264,59 @@ var game = {
 
 		this.c.fillStyle = pixel.color;
 		this.c.fillRect(x, y, this.pixelSize, this.pixelSize);
-	}
+	},
+
+	onkeydown: function (key) {
+		var now = new Date().getTime(),
+			since = now - this.keyAt;
+
+		if (since < this.keyDelay) {
+			return;
+		}
+
+		this.keyAt = now;
+
+		switch (key.keyCode) {
+			case 32:
+				this.drop();
+				break;
+			case 37:
+				this.moveLeft();
+				break;
+			case 38:
+				this.nextDirection();
+				break;
+			case 39:
+				this.moveRight();
+				break;
+			case 40:
+				this.moveDown();
+				break;
+		}
+	},
+
+	moveLeft: function () {
+		this.tetromino.col = this.tetromino.col - 1;
+	},
+
+	moveRight: function () {
+		this.tetromino.col = this.tetromino.col + 1;
+	},
+
+	drop: function () {
+		
+	},
+
+	nextDirection: function () {
+
+	},
+
+	moveDown: function () {
+		this.tetromino.row = this.tetromino.row + 1;
+	},
 };
 
 window.onload = function () {
 	game.start(document.querySelector("canvas"));
+	window.onkeydown = game.onkeydown.bind(game);
 };
