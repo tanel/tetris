@@ -6,6 +6,7 @@ var game = {
 	keyDelay: 100,
 	gameSpeed: 1000,
 	keyAt: 0,
+	droppedPixels: [],
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -180,12 +181,8 @@ var game = {
 		this.timeout = window.setTimeout(this.tick.bind(this), this.gameSpeed);
 	},
 
-	draw: function () {
-		this.drawBackground();
-		this.drawGrid();
-		this.drawTetromino();
-		
-		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.keyDelay);
+	cloneTetromino: function () {
+		return Object.assign({}, this.tetromino);
 	},
 
 	randomTetromino: function () {
@@ -203,6 +200,15 @@ var game = {
 
 	randomElement: function (list) {
 		return list[Math.floor(Math.random() * list.length)];
+	},
+
+	draw: function () {
+		this.drawBackground();
+		this.drawGrid();
+		this.drawTetromino();
+		this.drawDroppedPixels();
+
+		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.keyDelay);
 	},
 
 	drawBackground: function () {
@@ -228,17 +234,6 @@ var game = {
 		this.c.stroke();
 	},
 
-	visitTetrominoPixels: function (tetromino, visitor) {
-		var pixels = this.tetrominoPixels[tetromino.tetromino][tetromino.direction];
-		for (var row = 0; row < pixels.length; row++) {
-			for (var col = 0; col < pixels[row].length; col++) {
-				if (pixels[row][col]) {
-					visitor(tetromino.row + row, tetromino.col + col);
-				}
-			}
-		}
-	},
-
 	drawTetromino: function () {
 		var draw = this.drawPixel.bind(this),
 			tetromino = this.tetromino;
@@ -251,12 +246,29 @@ var game = {
 		});
 	},
 
+	drawDroppedPixels: function () {
+		for (var i = 0; i < this.droppedPixels.length; i++) {
+			this.drawPixel(this.droppedPixels[i]);
+		}
+	},
+
 	drawPixel: function (pixel) {
 		var x = pixel.col * this.pixelSize,
 			y = pixel.row * this.pixelSize;
 
 		this.c.fillStyle = pixel.color;
 		this.c.fillRect(x, y, this.pixelSize, this.pixelSize);
+	},
+
+	visitTetrominoPixels: function (tetromino, visitor) {
+		var pixels = this.tetrominoPixels[tetromino.tetromino][tetromino.direction];
+		for (var row = 0; row < pixels.length; row++) {
+			for (var col = 0; col < pixels[row].length; col++) {
+				if (pixels[row][col]) {
+					visitor(tetromino.row + row, tetromino.col + col);
+				}
+			}
+		}
 	},
 
 	onkeydown: function (key) {
@@ -286,10 +298,6 @@ var game = {
 				this.moveDown();
 				break;
 		}
-	},
-
-	cloneTetromino: function () {
-		return Object.assign({}, this.tetromino);
 	},
 
 	moveLeft: function () {
@@ -323,8 +331,23 @@ var game = {
 		var clone = this.cloneTetromino();
 		clone.row = clone.row + 1;
 		if (!this.moveTo(clone)) {
-			// add tetromino to dropped pixels, generate new tetromino
+			this.addToDroppedPixels();
 		}
+	},
+
+	addToDroppedPixels: function () {
+		var droppedPixels = this.droppedPixels,
+			tetromino = this.tetromino;
+
+		this.visitTetrominoPixels(tetromino, function (row, col) {
+			droppedPixels.push({
+				row: row,
+				col: col,
+				color: tetromino.color,
+			});
+		});
+
+		this.tetromino = this.randomTetromino();
 	},
 
 	moveTo: function (clone) {
