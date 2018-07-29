@@ -1,9 +1,8 @@
 var game = {
 	canvas: null,
-	pixels: [],
-	rows: 20,
-	cols: 20,
-	pixelSize: 30,
+	rows: 40,
+	cols: 40,
+	pixelSize: 10, // canvas width / cols
 	colors: ["red", "blue", "green", "yellow"],
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
@@ -162,58 +161,79 @@ var game = {
 			],
 		],
 	},
-	currentTetromino: null,
+	tetromino: null,
 
 	start: function () {
-		this.currentTetromino = this.randomElement(this.tetrominoes);
-		console.log(this.currentTetromino);
+		this.tetromino = this.randomTetromino();
 		this.drawBackground();
 		this.tick();
 	},
 
 	tick: function () {
-		this.drawPixels();
-		this.timeout = window.setTimeout(this.tick.bind(this), 1000);
+		this.draw();
+		this.timeout = window.setTimeout(this.tick.bind(this), 1000 * 100);
 	},
 
-	randomColor: function () {
-		return this.randomElement(this.colors);
+	randomTetromino: function () {
+		var tetromino = this.randomElement(this.tetrominoes),
+			pixels = this.tetrominoPixels[tetromino];
+
+		return {
+			color: this.randomElement(this.colors),
+			tetromino: tetromino,
+			direction: 0, // 0-3
+			x: Math.floor(this.cols / 2) - Math.floor(pixels[0][0].length / 2),
+			y: 0,
+		};
 	},
 
 	randomElement: function (list) {
 		return list[Math.floor(Math.random() * list.length)];
 	},
 
-	randomTetromino: function () {
-		return this.randomElement(this.tetrominoes);
-	},	
-
 	drawBackground: function () {
-		this.canvas.fillStyle = "black";
-		this.canvas.fillRect(0, 0, this.cols * this.pixelSize, this.rows * this.pixelSize);
+		this.c.fillStyle = "black";
+		this.c.fillRect(0, 0, this.cols * this.pixelSize, this.rows * this.pixelSize);
 	},
 
-	drawPixels: function () {
-		if (!this.pixels) {
-			return;
+	newPixels: function (rows, cols) {
+		var pixels = new Array(rows);
+		for (var row = 0; row < pixels.length; row++) {
+			pixels[row] = new Array(cols);
 		}
-		
-		var pixel, i, x, y, width, height;
-		for (i = 0; i < this.pixels.length; i++) {
-			pixel = this.pixels[i];
 
-			x = pixel.x * this.pixelSize;
-			y = pixel.y * this.pixelSize;
-			width = x + this.pixelSize;
-			height = y + this.pixelSize;
+		return pixels;
+	},
 
-			this.canvas.fillStyle = pixel.color;
-			this.canvas.fillRect(x, y, width, height);
+	draw: function () {
+		var tetrominoPixels = this.tetrominoPixels[this.tetromino.tetromino][this.tetromino.direction];
+		for (var row = 0; row < tetrominoPixels.length; row++) {
+			for (var col = 0; col < tetrominoPixels[row].length; col++) {
+				if (tetrominoPixels[row][col] === 1) {
+					this.drawPixel({
+						row: this.tetromino.y + row,
+						col: this.tetromino.x + col,
+						color: this.tetromino.color,
+					});
+				}
+			}
 		}
 	},
+
+	drawPixel: function (pixel) {
+		console.log(pixel);
+
+		var x = pixel.col * this.pixelSize,
+			y = pixel.row * this.pixelSize;
+
+		console.log(x, y, x + this.pixelSize, y + this.pixelSize);
+
+		this.c.fillStyle = pixel.color;
+		this.c.fillRect(x, y, this.pixelSize, this.pixelSize);
+	}
 };
 
 window.onload = function () {
-	game.canvas = document.querySelector("canvas").getContext("2d");
+	game.c = document.querySelector("canvas").getContext("2d");
 	game.start();
 };
