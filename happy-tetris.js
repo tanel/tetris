@@ -353,7 +353,8 @@ var game = {
 	moveTo: function (clone) {
 		var canMove = true,
 			maxRows = this.rows,
-			maxCols = this.cols;
+			maxCols = this.cols,
+			isDroppedPixel = this.isDroppedPixel.bind(this);
 
 		this.visitTetrominoPixels(clone, function (row, col) {
 			if (col < 0) {
@@ -367,11 +368,26 @@ var game = {
 			if (row >= maxRows) {
 				canMove = false;
 			}
+
+			if (isDroppedPixel(row, col)) {
+				canMove = false;
+			}
 		});
 
 		if (canMove) {
 			this.tetromino = clone;
 			return true;
+		}
+
+		return false;
+	},
+
+	isDroppedPixel: function (row, col) {
+		for (var i = 0; i < this.droppedPixels.length; i++) {
+			var pixel = this.droppedPixels[i];
+			if (pixel.row === row && pixel.col === col) {
+				return true;
+			}
 		}
 
 		return false;
