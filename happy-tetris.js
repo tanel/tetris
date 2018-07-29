@@ -1,8 +1,8 @@
 var game = {
 	canvas: null,
-	rows: 40,
-	cols: 40,
-	pixelSize: 10, // canvas width / cols
+	cols: 20,
+	rows: 20,
+	pixelSize: 20, // canvas.width / cols
 	colors: ["red", "blue", "green", "yellow"],
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
@@ -163,14 +163,16 @@ var game = {
 	},
 	tetromino: null,
 
-	start: function () {
+	start: function (canvas) {
+		this.c = canvas.getContext("2d");
 		this.tetromino = this.randomTetromino();
 		this.drawBackground();
+		this.drawGrid();
 		this.tick();
 	},
 
 	tick: function () {
-		this.draw();
+		this.drawTetromino();
 		this.timeout = window.setTimeout(this.tick.bind(this), 1000 * 100);
 	},
 
@@ -196,6 +198,24 @@ var game = {
 		this.c.fillRect(0, 0, this.cols * this.pixelSize, this.rows * this.pixelSize);
 	},
 
+	drawGrid: function () {
+		this.c.strokeStyle = "white";
+		this.c.lineWidth = 1;
+		this.c.beginPath();
+		
+		for (var row = 0; row < this.rows; row++) {
+			this.c.moveTo(0, row * this.pixelSize);
+			this.c.lineTo(this.cols * this.pixelSize, row * this.pixelSize);
+		}
+
+		for (var col = 0; col < this.cols; col++) {
+			this.c.moveTo(col * this.pixelSize, 0);
+			this.c.lineTo(col * this.pixelSize, row * this.rows);
+		}
+
+		this.c.stroke();
+	},
+
 	newPixels: function (rows, cols) {
 		var pixels = new Array(rows);
 		for (var row = 0; row < pixels.length; row++) {
@@ -205,11 +225,11 @@ var game = {
 		return pixels;
 	},
 
-	draw: function () {
+	drawTetromino: function () {
 		var tetrominoPixels = this.tetrominoPixels[this.tetromino.tetromino][this.tetromino.direction];
 		for (var row = 0; row < tetrominoPixels.length; row++) {
 			for (var col = 0; col < tetrominoPixels[row].length; col++) {
-				if (tetrominoPixels[row][col] === 1) {
+				if (tetrominoPixels[row][col]) {
 					this.drawPixel({
 						row: this.tetromino.y + row,
 						col: this.tetromino.x + col,
@@ -221,12 +241,8 @@ var game = {
 	},
 
 	drawPixel: function (pixel) {
-		console.log(pixel);
-
 		var x = pixel.col * this.pixelSize,
 			y = pixel.row * this.pixelSize;
-
-		console.log(x, y, x + this.pixelSize, y + this.pixelSize);
 
 		this.c.fillStyle = pixel.color;
 		this.c.fillRect(x, y, this.pixelSize, this.pixelSize);
@@ -234,6 +250,5 @@ var game = {
 };
 
 window.onload = function () {
-	game.c = document.querySelector("canvas").getContext("2d");
-	game.start();
+	game.start(document.querySelector("canvas"));
 };
