@@ -166,14 +166,23 @@ var game = {
 	start: function (canvas) {
 		this.c = canvas.getContext("2d");
 		this.tetromino = this.randomTetromino();
-		this.drawBackground();
-		this.drawGrid();
 		this.tick();
 	},
 
 	tick: function () {
+		this.draw();
+		this.moveTetromino();
+		this.timeout = window.setTimeout(this.tick.bind(this), 1000);
+	},
+
+	draw: function () {
+		this.drawBackground();
+		this.drawGrid();
 		this.drawTetromino();
-		this.timeout = window.setTimeout(this.tick.bind(this), 1000 * 100);
+	},
+
+	moveTetromino: function () {
+		this.tetromino.row = this.tetromino.row + 1;
 	},
 
 	randomTetromino: function () {
@@ -184,8 +193,8 @@ var game = {
 			color: this.randomElement(this.colors),
 			tetromino: tetromino,
 			direction: 0, // 0-3
-			x: Math.floor(this.cols / 2) - Math.floor(pixels[0][0].length / 2),
-			y: 0,
+			col: Math.floor(this.cols / 2) - Math.floor(pixels[0][0].length / 2),
+			row: 0,
 		};
 	},
 
@@ -231,8 +240,8 @@ var game = {
 			for (var col = 0; col < tetrominoPixels[row].length; col++) {
 				if (tetrominoPixels[row][col]) {
 					this.drawPixel({
-						row: this.tetromino.y + row,
-						col: this.tetromino.x + col,
+						row: this.tetromino.row + row,
+						col: this.tetromino.col + col,
 						color: this.tetromino.color,
 					});
 				}
