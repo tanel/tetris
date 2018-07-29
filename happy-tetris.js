@@ -172,7 +172,7 @@ var game = {
 	},
 
 	tick: function () {
-		this.moveTetromino();
+		this.moveDown();
 		this.setTickTimeout();
 	},
 
@@ -186,10 +186,6 @@ var game = {
 		this.drawTetromino();
 		
 		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.keyDelay);
-	},
-
-	moveTetromino: function () {
-		this.tetromino.row = this.tetromino.row + 1;
 	},
 
 	randomTetromino: function () {
@@ -230,15 +226,6 @@ var game = {
 		}
 
 		this.c.stroke();
-	},
-
-	newPixels: function (rows, cols) {
-		var pixels = new Array(rows);
-		for (var row = 0; row < pixels.length; row++) {
-			pixels[row] = new Array(cols);
-		}
-
-		return pixels;
 	},
 
 	visitTetrominoPixels: function (tetromino, visitor) {
@@ -335,7 +322,9 @@ var game = {
 	moveDown: function () {
 		var clone = this.cloneTetromino();
 		clone.row = clone.row + 1;
-		this.moveTo(clone);
+		if (!this.moveTo(clone)) {
+			// add tetromino to dropped pixels, generate new tetromino
+		}
 	},
 
 	moveTo: function (clone) {
@@ -359,7 +348,10 @@ var game = {
 
 		if (canMove) {
 			this.tetromino = clone;
+			return true;
 		}
+
+		return false;
 	},
 };
 
