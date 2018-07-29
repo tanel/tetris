@@ -1,12 +1,171 @@
 var game = {
 	canvas: null,
-	pixels: [], // pixels are (x,y)
+	pixels: [],
 	rows: 20,
 	cols: 20,
 	pixelSize: 30,
 	colors: ["red", "blue", "green", "yellow"],
+	// tetrominoes start from top and rotate clockwise.
+	tetrominoes: {
+		"I": [
+			[
+				[0, 0, 0, 0],
+				[1, 1, 1, 1],
+				[0, 0, 0, 0],
+				[0, 0, 0, 0],
+			],
+			[
+				[0, 0, 1, 0],
+				[0, 0, 1, 0],
+				[0, 0, 1, 0],
+				[0, 0, 1, 0],
+			],
+			[
+				[0, 0, 0, 0],
+				[0, 0, 0, 0],
+				[1, 1, 1, 1],
+				[0, 0, 0, 0],
+			],
+			[
+				[0, 1, 0, 0],
+				[0, 1, 0, 0],
+				[0, 1, 0, 0],
+				[0, 1, 0, 0],
+			],
+		],
+		"O": [
+			[
+				[1, 1],
+				[1, 1],
+			],
+			[
+				[1, 1],
+				[1, 1],
+			],
+			[
+				[1, 1],
+				[1, 1],
+			],
+			[
+				[1, 1],
+				[1, 1],
+			],
+		],
+		"T": [
+			[
+				[1, 1, 1],
+				[0, 1, 0],
+				[0, 0, 0],
+			],
+			[
+				[0, 0, 1],
+				[0, 1, 1],
+				[0, 0, 1],
+			],
+			[
+				[0, 0, 0],
+				[0, 1, 0],
+				[1, 1, 1],
+			],
+			[
+				[1, 0, 0],
+				[1, 1, 0],
+				[1, 0, 0],
+			],
+		],
+		"J": [
+			[
+				[1, 1, 1],
+				[0, 0, 1],
+				[0, 0, 0],
+			],
+			[
+				[0, 0, 1],
+				[0, 0, 1],
+				[0, 1, 1],
+			],
+			[
+				[0, 0, 0],
+				[1, 0, 0],
+				[1, 1, 1],
+			],
+			[
+				[1, 1, 0],
+				[1, 0, 0],
+				[1, 0, 0],
+			],
+		],
+		"L": [
+			[
+				[1, 1, 1],
+				[1, 0, 0],
+				[0, 0, 0],
+			],
+			[
+				[0, 1, 1],
+				[0, 0, 1],
+				[0, 0, 1],
+			],
+			[
+				[0, 0, 0],
+				[0, 0, 1],
+				[1, 1, 1],
+			],
+			[
+				[1, 0, 0],
+				[1, 0, 0],
+				[1, 1, 0],
+			],
+		],
+		"S": [
+			[
+				[0, 1, 1],
+				[1, 1, 0],
+				[0, 0, 0],
+			],
+			[
+				[0, 1, 0],
+				[0, 1, 1],
+				[0, 0, 1],
+			],
+			[
+				[0, 0, 0],
+				[0, 1, 1],
+				[1, 1, 0],
+			],
+			[
+				[1, 0, 0],
+				[1, 1, 0],
+				[0, 1, 0],
+			],
+		],
+		"Z": [
+			[
+				[1, 1, 0],
+				[0, 1, 1],
+				[0, 0, 0],
+			],
+			[
+				[0, 0, 1],
+				[0, 1, 1],
+				[0, 1, 0],
+			],
+			[
+				[0, 0, 0],
+				[1, 1, 0],
+				[0, 1, 1],
+			],
+			[
+				[0, 1, 0],
+				[1, 1, 0],
+				[1, 0, 0],
+			],
+		],
+	},
+	currentTetromino: null,
 
 	start: function () {
+		this.currentTetromino = 
 		this.drawBackground();
 		this.tick();
 	},
@@ -17,8 +176,16 @@ var game = {
 	},
 
 	randomColor: function () {
-		return this.colors[Math.floor(Math.random() * this.colors.length)];
+		return this.randomElement(this.colors);
 	},
+
+	randomElement: function (list) {
+		return list[Math.floor(Math.random() * list.length)];
+	},
+
+	randomTetromino: function () {
+		return this.randomElement(this.tetrominoes);
+	},	
 
 	drawBackground: function () {
 		this.canvas.fillStyle = "black";
