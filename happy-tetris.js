@@ -1,6 +1,6 @@
 var game = {
-	cols: 20,
-	rows: 20,
+	cols: 15,
+	rows: 15,
 	pixelSize: 20, // canvas.width / cols
 	colors: ["red", "blue", "green", "yellow"],
 	keyDelay: 100,
@@ -228,7 +228,7 @@ var game = {
 
 		for (var col = 0; col < this.cols; col++) {
 			this.c.moveTo(col * this.pixelSize, 0);
-			this.c.lineTo(col * this.pixelSize, row * this.rows);
+			this.c.lineTo(col * this.pixelSize, this.rows * this.pixelSize);
 		}
 
 		this.c.stroke();
@@ -335,22 +335,8 @@ var game = {
 		}
 
 		this.addToDroppedPixels();
+		this.removeFullRows();
 		return false;
-	},
-
-	addToDroppedPixels: function () {
-		var droppedPixels = this.droppedPixels,
-			tetromino = this.tetromino;
-
-		this.visitTetrominoPixels(tetromino, function (row, col) {
-			droppedPixels.push({
-				row: row,
-				col: col,
-				color: tetromino.color,
-			});
-		});
-
-		this.tetromino = this.randomTetromino();
 	},
 
 	moveTo: function (clone) {
@@ -394,6 +380,33 @@ var game = {
 		}
 
 		return false;
+	},
+
+	addToDroppedPixels: function () {
+		var droppedPixels = this.droppedPixels,
+			tetromino = this.tetromino;
+
+		this.visitTetrominoPixels(tetromino, function (row, col) {
+			droppedPixels.push({
+				row: row,
+				col: col,
+				color: tetromino.color,
+			});
+		});
+
+		this.tetromino = this.randomTetromino();
+	},
+
+	removeFullRows: function () {
+		var rows = {};
+		for (var i = 0; i < this.droppedPixels.length; i++) {
+			var pixel = this.droppedPixels[i];
+			if (!rows[pixel.row]) {
+				rows[pixel.row] = 1;
+			} else {
+				rows[pixel.row] = rows[pixel.row] + 1;
+			}
+		}
 	},
 };
 
