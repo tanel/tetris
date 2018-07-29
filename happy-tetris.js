@@ -5,8 +5,8 @@ var game = {
 	cols: 20,
 	pixelSize: 30,
 	colors: ["red", "blue", "green", "yellow"],
-	// tetrominoes start from top and rotate clockwise.
-	tetrominoes: {
+	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
+	tetrominoPixels: {
 		"I": [
 			[
 				[0, 0, 0, 0],
@@ -165,7 +165,8 @@ var game = {
 	currentTetromino: null,
 
 	start: function () {
-		this.currentTetromino = 
+		this.currentTetromino = this.randomElement(this.tetrominoes);
+		console.log(this.currentTetromino);
 		this.drawBackground();
 		this.tick();
 	},
