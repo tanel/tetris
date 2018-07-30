@@ -8,6 +8,8 @@ var game = {
 	gameSpeed: 1000,
 	keyAt: 0,
 	droppedPixels: [],
+	fallSound: new Audio('fallsound.wav'),
+	clearSound: new Audio('clearsound.wav'),
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -342,34 +344,26 @@ var game = {
 
 	moveTo: function (clone) {
 		var canMove = true,
-			maxRows = this.rows,
-			maxCols = this.cols,
+			isOutOfBounds = this.isOutOfBounds.bind(this),
 			isDroppedPixel = this.isDroppedPixel.bind(this);
 
 		this.visitTetrominoPixels(clone, function (row, col) {
-			if (col < 0) {
+			if (isOutOfBounds(row, col)) {
 				canMove = false;
-			}
-
-			if (col >= maxCols) {
-				canMove = false;
-			}
-
-			if (row >= maxRows) {
-				canMove = false;
-			}
-
-			if (isDroppedPixel(row, col)) {
+			} else if (isDroppedPixel(row, col)) {
 				canMove = false;
 			}
 		});
 
 		if (canMove) {
 			this.tetromino = clone;
-			return true;
 		}
 
-		return false;
+		return canMove;
+	},
+
+	isOutOfBounds: function (row, col) {
+		return ((col < 0) || (col >= this.cols) || (row >= this.rows));
 	},
 
 	isDroppedPixel: function (row, col) {
@@ -399,15 +393,50 @@ var game = {
 	},
 
 	removeFullRows: function () {
-		var rows = {};
-		for (var i = 0; i < this.droppedPixels.length; i++) {
-			var pixel = this.droppedPixels[i];
-			if (!rows[pixel.row]) {
-				rows[pixel.row] = 1;
-			} else {
-				rows[pixel.row] = rows[pixel.row] + 1;
+		while (this.removeFullRow());
+	},
+
+	findFullRow: function () {
+		var pixel = null,
+			cols = {},
+			i;
+
+		for (i = 0; i < this.droppedPixels.length; i++) {
+			pixel = this.droppedPixels[i];
+			cols[pixel.row] = (cols[pixel.row] || 0) + 1;
+			if (cols[pixel.row] >= this.cols) {
+				return pixel.row;
 			}
 		}
+
+		return -1;
+	},
+
+	removeFullRow: function () {
+		var fullRow = this.findFullRow();
+		if (fullRow === -1) {
+			return false;
+		}
+
+		// filter tetrominoes in full row(s)
+		var remaining = [];
+		for (i = 0; i < this.droppedPixels.length; i++) {
+			pixel = this.droppedPixels[i];
+
+			if (pixel.row < fullRow) {
+				pixel.row = pixel.row + 1;
+			}
+
+			if (pixel.row !== fullRow) {
+				remaining.push(pixel);
+			}
+		}
+
+		this.droppedPixels = remaining;
+
+		this.clearSound.play();
+
+		return true;
 	},
 };
 
