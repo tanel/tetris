@@ -392,7 +392,7 @@ var game = {
 			});
 		});
 
-		this.tetromino = this.randomTetromino();
+		this.moveTo(this.randomTetromino());
 	},
 
 	clearRows: function () {
