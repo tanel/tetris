@@ -1,5 +1,5 @@
-default: build
+default: lint
 
-build:
+lint:
 	@html-validator --file index.html --verbose
-	@jshint happy-tetris.js
+	@jshint --config jshint.json happy-tetris.js

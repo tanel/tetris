@@ -1,3 +1,6 @@
+/* global document,window,Audio */
+"use strict";
+
 var game = {
 	cols: 15,
 	rows: 15,
@@ -338,7 +341,7 @@ var game = {
 		}
 
 		this.addToDroppedPixels();
-		this.removeFullRows();
+		this.clearRows();
 		return false;
 	},
 
@@ -392,8 +395,34 @@ var game = {
 		this.tetromino = this.randomTetromino();
 	},
 
-	removeFullRows: function () {
-		while (this.removeFullRow());
+	clearRows: function () {
+		while (this.removeRow(this.findFullRow.bind(this)));
+	},
+
+	removeRow: function (finder) {
+		var row = finder(),
+			remaining = [],
+			pixel = null,
+			i;
+
+		if (!row) {
+			return null;
+		}
+
+		for (i = 0; i < this.droppedPixels.length; i++) {
+			pixel = this.droppedPixels[i];
+			if (pixel.row < row) {
+				pixel.row = pixel.row + 1;
+			}
+
+			if (pixel.row !== row) {
+				remaining.push(pixel);
+			}
+		}
+
+		this.droppedPixels = remaining;
+		this.clearSound.play();
+		return row;
 	},
 
 	findFullRow: function () {
@@ -409,35 +438,9 @@ var game = {
 			}
 		}
 
-		return -1;
+		return null;
 	},
 
-	removeFullRow: function () {
-		var fullRow = this.findFullRow();
-		if (fullRow === -1) {
-			return false;
-		}
-
-		// filter tetrominoes in full row(s)
-		var remaining = [];
-		for (i = 0; i < this.droppedPixels.length; i++) {
-			pixel = this.droppedPixels[i];
-
-			if (pixel.row < fullRow) {
-				pixel.row = pixel.row + 1;
-			}
-
-			if (pixel.row !== fullRow) {
-				remaining.push(pixel);
-			}
-		}
-
-		this.droppedPixels = remaining;
-
-		this.clearSound.play();
-
-		return true;
-	},
 };
 
 window.onload = function () {
