@@ -2,8 +2,8 @@
 "use strict";
 
 var game = {
-	cols: 15,
-	rows: 15,
+	cols: 10,
+	rows: 20,
 	pixelSize: 20, // canvas.width / cols
 	colors: ["red", "blue", "green", "yellow"],
 	keyDelay: 50,
