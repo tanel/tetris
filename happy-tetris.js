@@ -3,7 +3,8 @@ var game = {
 	rows: 15,
 	pixelSize: 20, // canvas.width / cols
 	colors: ["red", "blue", "green", "yellow"],
-	keyDelay: 100,
+	keyDelay: 50,
+	drawSpeed: 100,
 	gameSpeed: 1000,
 	keyAt: 0,
 	droppedPixels: [],
@@ -208,7 +209,7 @@ var game = {
 		this.drawTetromino();
 		this.drawDroppedPixels();
 
-		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.keyDelay);
+		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.drawSpeed);
 	},
 
 	drawBackground: function () {
