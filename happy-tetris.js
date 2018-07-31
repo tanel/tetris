@@ -11,8 +11,8 @@ var game = {
 	gameSpeed: 1000,
 	keyAt: 0,
 	droppedPixels: [],
-	fallSound: new Audio('fallsound.wav'),
-	clearSound: new Audio('clearsound.wav'),
+	dropSound: new Audio('drop.wav'),
+	clearSound: new Audio('clear.wav'),
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -320,6 +320,7 @@ var game = {
 
 	drop: function () {
 		while (this.moveDown());
+		this.dropSound.play();
 	},
 
 	nextDirection: function () {
