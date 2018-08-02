@@ -13,6 +13,8 @@ var game = {
 	droppedPixels: [],
 	dropSound: new Audio('drop.wav'),
 	clearSound: new Audio('clear.wav'),
+	score: 0,
+	scoreEl: null,
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -171,8 +173,9 @@ var game = {
 		],
 	},
 
-	start: function (canvas) {
+	start: function (canvas, scoreEl) {
 		this.c = canvas.getContext("2d");
+		this.scoreEl = scoreEl;
 		this.tetromino = this.randomTetromino();
 		this.draw();
 		this.setTickTimeout();
@@ -423,7 +426,13 @@ var game = {
 
 		this.droppedPixels = remaining;
 		this.clearSound.play();
+		this.score++;
+		this.displayScore();
 		return row;
+	},
+
+	displayScore: function () {
+		this.scoreEl.textContent = String(this.score);
 	},
 
 	findFullRow: function () {
@@ -445,6 +454,6 @@ var game = {
 };
 
 window.onload = function () {
-	game.start(document.querySelector("canvas"));
+	game.start(document.querySelector("canvas"), document.getElementById('score'));
 	window.onkeydown = game.onkeydown.bind(game);
 };
