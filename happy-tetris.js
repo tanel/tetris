@@ -415,10 +415,6 @@ var game = {
 
 		for (i = 0; i < this.droppedPixels.length; i++) {
 			pixel = this.droppedPixels[i];
-			if (pixel.row < row) {
-				pixel.row = pixel.row + 1;
-			}
-
 			if (pixel.row !== row) {
 				remaining.push(pixel);
 			}
