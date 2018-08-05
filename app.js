@@ -417,6 +417,7 @@ var game = {
 
 	clearRows: function () {
 		while (this.removeRow(this.findFullRow.bind(this)));
+		this.compress();
 	},
 
 	removeRow: function (finder) {
@@ -441,7 +442,7 @@ var game = {
 		
 		this.score++;
 		this.displayScore();
-		
+
 		return row;
 	},
 
@@ -449,22 +450,39 @@ var game = {
 		this.scoreEl.textContent = String(this.score);
 	},
 
-	findFullRow: function () {
+	countCols: function () {
 		var pixel = null,
 			cols = {},
-			i;
+			i,
+			result = [];
 
 		for (i = 0; i < this.droppedPixels.length; i++) {
 			pixel = this.droppedPixels[i];
 			cols[pixel.row] = (cols[pixel.row] || 0) + 1;
-			if (cols[pixel.row] >= this.cols) {
-				return pixel.row;
+		}
+
+		for (i = 0; i < this.rows; i++) {
+			result.push(cols[i]);
+		}
+
+		return result;
+	},
+
+	findFullRow: function () {
+		var rows = this.countCols(),
+			i;
+
+		for (i = 0; i < rows.length; i++) {
+			if (rows[i] >= this.cols) {
+				return i;
 			}
 		}
 
 		return null;
 	},
 
+	compress: function () {
+	},
 };
 
 window.onload = function () {
