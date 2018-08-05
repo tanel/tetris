@@ -13,6 +13,7 @@ var game = {
 	droppedPixels: [],
 	dropSound: new Audio('drop.wav'),
 	clearSound: new Audio('clear.wav'),
+	soundEnabled: true,
 	score: 0,
 	scoreEl: null,
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
@@ -173,12 +174,21 @@ var game = {
 		],
 	},
 
-	start: function (canvas, scoreEl) {
-		this.c = canvas.getContext("2d");
-		this.scoreEl = scoreEl;
+	start: function (opts) {
+		window.onkeydown = game.onkeydown.bind(game);
+
+		this.c = opts.canvas.getContext("2d");
+		this.scoreEl = opts.scoreEl;
+		opts.enableSoundEl.onclick = this.enableSound.bind(this);
+		
 		this.tetromino = this.randomTetromino();
+		
 		this.draw();
 		this.setTickTimeout();
+	},
+
+	enableSound: function (event) {
+		this.soundEnabled = event.target.checked;
 	},
 
 	tick: function () {
@@ -323,7 +333,13 @@ var game = {
 
 	drop: function () {
 		while (this.moveDown());
-		this.dropSound.play();
+		this.playSound(this.dropSound);
+	},
+
+	playSound: function (sound) {
+		if (this.soundEnabled) {
+			sound.play();
+		}
 	},
 
 	nextDirection: function () {
@@ -421,9 +437,11 @@ var game = {
 		}
 
 		this.droppedPixels = remaining;
-		this.clearSound.play();
+		this.playSound(this.clearSound);
+		
 		this.score++;
 		this.displayScore();
+		
 		return row;
 	},
 
@@ -450,6 +468,9 @@ var game = {
 };
 
 window.onload = function () {
-	game.start(document.querySelector("canvas"), document.getElementById('score'));
-	window.onkeydown = game.onkeydown.bind(game);
+	game.start({
+		canvas: document.querySelector("canvas"),
+		scoreEl: document.getElementById('score'),
+		enableSoundEl: document.getElementById('enableSound'),
+	});
 };
