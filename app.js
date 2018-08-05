@@ -1,4 +1,4 @@
-/* global document,window,Audio */
+/* global document,window,Audio,console */
 "use strict";
 
 var game = {
@@ -416,8 +416,12 @@ var game = {
 	},
 
 	clearRows: function () {
+		this.removeFullRows();
+		this.removeEmptyRows();
+	},
+
+	removeFullRows: function () {
 		while (this.removeRow(this.findFullRow.bind(this)));
-		this.compress();
 	},
 
 	removeRow: function (finder) {
@@ -481,7 +485,51 @@ var game = {
 		return null;
 	},
 
-	compress: function () {
+	findEmptyRow: function () {
+		var rows = this.countCols(),
+			i,
+			firstNonEmpty = null;
+
+		for (i = 0; i < rows.length; i++) {
+			if (rows[i]) {
+				firstNonEmpty = i;
+				break;
+			}
+		}
+
+		if (!firstNonEmpty) {
+			return null;
+		}
+
+		for (i = firstNonEmpty + 1; i < rows.length; i++) {
+			if (!rows[i]) {
+				return i;
+			}
+		}
+
+		return null;
+	},
+
+	removeEmptyRows: function () {
+		var empty,
+			remaining,
+			i,
+			pixel = null;
+
+		while (true) {
+			empty = this.findEmptyRow();
+			if (!empty) {
+				return;
+			}
+
+			for (i = 0; i < this.droppedPixels.length; i++) {
+				pixel = this.droppedPixels[i];
+				if (pixel.row < empty) {
+					pixel.row = pixel.row + 1;
+					this.droppedPixels[i] = pixel;
+				}
+			}
+		}
 	},
 };
 
