@@ -179,7 +179,13 @@ var game = {
 
 		this.c = opts.canvas.getContext("2d");
 		this.scoreEl = opts.scoreEl;
+		
+		this.enableSoundEl = opts.enableSoundEl;
 		opts.enableSoundEl.onclick = this.enableSound.bind(this);
+		if (window.localStorage) {
+			this.soundEnabled = (window.localStorage.getItem('soundEnabled') === 'true');
+			this.enableSoundEl.checked = this.soundEnabled;
+		}
 		
 		this.tetromino = this.randomTetromino();
 		
@@ -189,6 +195,9 @@ var game = {
 
 	enableSound: function (event) {
 		this.soundEnabled = event.target.checked;
+		if (window.localStorage) {
+			window.localStorage.setItem('soundEnabled', this.soundEnabled);
+		}
 	},
 
 	tick: function () {
