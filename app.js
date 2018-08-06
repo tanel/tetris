@@ -5,7 +5,7 @@ var game = {
 	cols: 10,
 	rows: 20,
 	pixelSize: 20, // canvas.width / cols
-	colors: ["red", "blue", "green", "yellow"],
+	colors: ["red", "violet", "green", "gold"],
 	keyDelay: 50,
 	drawSpeed: 100,
 	gameSpeed: 1000,
