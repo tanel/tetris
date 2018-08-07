@@ -178,17 +178,22 @@ var game = {
 		window.onkeydown = game.onkeydown.bind(game);
 
 		this.c = opts.canvas.getContext("2d");
+
 		this.scoreEl = opts.scoreEl;
-		
+		this.highScoreEl = opts.highScoreEl;
+		if (window.localStorage) {
+			this.highScoreEl.textContent = window.localStorage.getItem('highScore');
+		}
+
 		this.enableSoundEl = opts.enableSoundEl;
 		opts.enableSoundEl.onclick = this.enableSound.bind(this);
 		if (window.localStorage) {
 			this.soundEnabled = (window.localStorage.getItem('soundEnabled') === 'true');
 			this.enableSoundEl.checked = this.soundEnabled;
 		}
-		
+
 		this.tetromino = this.randomTetromino();
-		
+
 		this.draw();
 		this.setTickTimeout();
 	},
@@ -453,14 +458,22 @@ var game = {
 		this.droppedPixels = remaining;
 		this.playSound(this.clearSound);
 		
-		this.score++;
-		this.displayScore();
+		this.increaseScore(1);
 
 		return row;
 	},
 
-	displayScore: function () {
+	increaseScore: function (increment) {
+		this.score = this.score + increment;
+
 		this.scoreEl.textContent = String(this.score);
+
+		if (window.localStorage) {
+			var highScore = parseInt(window.localStorage.getItem('highScore'), 10);
+			if (highScore < this.score) {
+				window.localStorage.setItem('highScore', this.score);
+			}
+		}
 	},
 
 	countCols: function () {
@@ -546,6 +559,7 @@ window.onload = function () {
 	game.start({
 		canvas: document.querySelector("canvas"),
 		scoreEl: document.getElementById('score'),
+		highScoreEl: document.getElementById('highScore'),
 		enableSoundEl: document.getElementById('enableSound'),
 	});
 };
