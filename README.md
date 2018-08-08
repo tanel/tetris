@@ -1,4 +1,4 @@
-# happy-tetris
+# tetris
 
 ## How to play
 
