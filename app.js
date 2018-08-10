@@ -16,6 +16,7 @@ var game = {
 	soundEnabled: true,
 	score: 0,
 	scoreEl: null,
+	paused: false,
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -330,16 +331,31 @@ var game = {
 			case 40:
 				this.moveDown();
 				break;
+			case 80:
+				this.togglePause();
+				break;
 		}
 	},
 
+	togglePause: function () {
+		this.paused = !this.paused;
+	},
+
 	moveLeft: function () {
+		if (this.paused) {
+			return;
+		}
+
 		var clone = this.cloneTetromino();
 		clone.col = clone.col - 1;
 		this.moveTo(clone);
 	},
 
 	moveRight: function () {
+		if (this.paused) {
+			return;
+		}
+
 		var clone = this.cloneTetromino();
 		clone.col = clone.col + 1;
 		this.moveTo(clone);
@@ -357,6 +373,10 @@ var game = {
 	},
 
 	nextDirection: function () {
+		if (this.paused) {
+			return;
+		}
+
 		var clone = this.cloneTetromino();
 		if (clone.direction === 3) {
 			clone.direction = 0;
@@ -368,6 +388,10 @@ var game = {
 	},
 
 	moveDown: function () {
+		if (this.paused) {
+			return;
+		}
+
 		var clone = this.cloneTetromino();
 		clone.row = clone.row + 1;
 		if (this.moveTo(clone)) {
