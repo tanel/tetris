@@ -17,6 +17,8 @@ var game = {
 	score: 0,
 	scoreEl: null,
 	paused: false,
+	tetromino: null,
+	nextTetromino: null,
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
 	tetrominoPixels: {
 		"I": [
@@ -194,6 +196,7 @@ var game = {
 		}
 
 		this.tetromino = this.randomTetromino();
+		this.nextTetromino = this.randomTetromino();
 
 		this.draw();
 		this.setTickTimeout();
@@ -240,6 +243,7 @@ var game = {
 		this.drawBackground();
 		this.drawGrid();
 		this.drawTetromino();
+		this.drawNextTetromino();
 		this.drawDroppedPixels();
 
 		this.drawTimeout = window.setTimeout(this.draw.bind(this), this.drawSpeed);
@@ -269,12 +273,31 @@ var game = {
 	},
 
 	drawTetromino: function () {
-		var draw = this.drawPixel.bind(this),
+		var drawPixel = this.drawPixel.bind(this),
 			tetromino = this.tetromino;
+
 		this.visitTetrominoPixels(tetromino, function (row, col) {
-			draw({
+			drawPixel({
 				row: row,
 				col: col,
+				color: tetromino.color,
+			});
+		});
+	},
+
+	drawNextTetromino: function () {
+		var drawPixel = this.drawPixel.bind(this),
+			tetromino = this.nextTetromino,
+			rowShift = 1,
+			colShift = this.cols - 2;
+
+		this.c.fillStyle = "white";
+		this.c.fillRect(this.cols * this.pixelSize, 0, (this.cols + colShift) * this.pixelSize, this.rows * this.pixelSize);
+
+		this.visitTetrominoPixels(tetromino, function (row, col) {
+			drawPixel({
+				row: row + rowShift,
+				col: col + colShift,
 				color: tetromino.color,
 			});
 		});
@@ -450,7 +473,8 @@ var game = {
 			});
 		});
 
-		this.moveTo(this.randomTetromino());
+		this.moveTo(this.nextTetromino);
+		this.nextTetromino = this.randomTetromino();
 	},
 
 	clearRows: function () {
