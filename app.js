@@ -517,7 +517,7 @@ var game = {
 		this.scoreEl.textContent = String(this.score);
 
 		if (window.localStorage) {
-			var highScore = parseInt(window.localStorage.getItem('highScore'), 10);
+			var highScore = parseInt(window.localStorage.getItem('highScore'), 10) || 0;
 			if (highScore < this.score) {
 				window.localStorage.setItem('highScore', this.score);
 			}
