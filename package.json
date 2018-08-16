@@ -21,7 +21,7 @@
   "homepage": "https://github.com/tanel/tetris#readme",
   "dependencies": {
     "csslint": "^1.0.5",
-    "html-validator-cli": "^4.0.5",
+    "html-validator": "^3.0.6",
     "jshint": "^2.9.6"
   }
 }
