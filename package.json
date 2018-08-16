@@ -1,0 +1,27 @@
+{
+  "name": "tetris",
+  "version": "1.0.0",
+  "description": "Tetris",
+  "main": "app.js",
+  "scripts": {
+    "test": "html-validator --file index.html && jshint --config jshint.json app.js && csslint app.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanel/tetris.git"
+  },
+  "keywords": [
+    "tetris"
+  ],
+  "author": "Tanel Lebedev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tanel/tetris/issues"
+  },
+  "homepage": "https://github.com/tanel/tetris#readme",
+  "dependencies": {
+    "csslint": "^1.0.5",
+    "html-validator": "^3.0.6",
+    "jshint": "^2.9.6"
+  }
+}
