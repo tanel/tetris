@@ -4,7 +4,8 @@
   "description": "Tetris",
   "main": "app.js",
   "scripts": {
-    "test": "html-validator --file index.html && jshint --config jshint.json app.js && csslint app.css"
+    "html-validator": "html-validator --file index.html",
+    "test": "jshint --config jshint.json app.js && csslint app.css"
   },
   "repository": {
     "type": "git",
@@ -21,7 +22,6 @@
   "homepage": "https://github.com/tanel/tetris#readme",
   "dependencies": {
     "csslint": "^1.0.5",
-    "html-validator": "^3.0.6",
     "jshint": "^2.9.6"
   }
 }

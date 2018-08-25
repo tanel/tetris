@@ -20,6 +20,7 @@ var game = {
 	tetromino: null,
 	nextTetromino: null,
 	tetrominoes: ["I", "O", "T", "J", "L", "S", "Z"],
+	gameOver: false,
 	tetrominoPixels: {
 		"I": [
 			[
@@ -329,6 +330,10 @@ var game = {
 	},
 
 	onkeydown: function (key) {
+		if (this.gameOver) {
+			return;
+		}
+
 		var now = new Date().getTime(),
 			since = now - this.keyAt;
 
@@ -463,7 +468,8 @@ var game = {
 
 	addToDroppedPixels: function () {
 		var droppedPixels = this.droppedPixels,
-			tetromino = this.tetromino;
+			tetromino = this.tetromino,
+			canMove = false;
 
 		this.visitTetrominoPixels(tetromino, function (row, col) {
 			droppedPixels.push({
@@ -473,7 +479,14 @@ var game = {
 			});
 		});
 
-		this.moveTo(this.nextTetromino);
+		canMove = this.moveTo(this.nextTetromino);
+		if (!canMove) {
+			window.clearTimeout(this.timeout);
+			delete this.timeout;
+			this.gameOver = true;
+			return;
+		}
+
 		this.nextTetromino = this.randomTetromino();
 	},
 
